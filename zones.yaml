@@ -1,0 +1,24 @@
+#################################################################
+## Zones
+#################################################################
+
+#Veda school
+  - name: School
+    latitude: 43.068
+    longitude: -88.055
+    radius: 300
+    icon: mdi:school
+    
+#Papas house
+  - name: Papa
+    latitude: 43.384
+    longitude: -87.905
+    radius: 150
+    icon: mdi:home
+
+#Home
+  - name: Home
+    latitude: 43.048
+    longitude: -88.063
+    radius: 100
+    icon: mdi:home-modern

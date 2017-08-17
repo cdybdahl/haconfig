@@ -1,0 +1,414 @@
+#################################################################
+## Automations
+#################################################################
+
+#################################################################
+## Lights
+#################################################################
+
+# Front door light timer
+  - id: porchLightOn
+    alias: 'LIGHT: Turn on front door at sunset'
+    trigger:
+      - platform: sun
+        event: sunset
+        offset: '-00:20:00'
+    action:
+      - service: light.turn_on
+        entity_id: light.front_door
+      - service: notify.slack
+        data:
+          message: "Hey guys, I turned on the front door light for you."
+
+  - id: porchLightOff
+    alias: 'LIGHT: Turn off front door at sunrise'
+    trigger:
+      - platform: sun
+        event: sunrise
+        offset: "+00:20:00"
+    action:
+      - service: light.turn_off
+        entity_id: light.front_door
+      - service: notify.slack
+        data:
+          message: "Hey guys, I turned off the front door light for you."
+
+# Office light timer
+  - id: officeLightOn
+    alias: 'LIGHT: Turn on office lights when working'
+    trigger:
+      platform: time
+      at: '07:20:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: device_tracker.chadssurfacebook
+            state: home
+          - condition: time
+            weekday:
+              - mon
+              - tue
+              - wed
+              - thu
+              - fri
+    action:
+      - service: light.turn_on
+        entity_id: group.office_lights
+      - service: notify.slack
+        data:
+          message: "Hey guys, I just turned on the office lights."
+
+  - id: officeLightOff
+    alias: 'LIGHTS: Turn office lights off at EOD'
+    trigger:
+      - platform: time
+        at: '16:30:00'
+    action:
+      - service: light.turn_off
+        entity_id: group.office_lights
+      - service: notify.slack
+        data:
+          message: "Hey guys, I just turned off the office lights."
+
+# Turn off den lights when Roku starts playing after dark
+  - id: movieScene
+    alias: "SCENE: Media player playing"
+    trigger:
+      - platform: state
+        entity_id: remote.den
+        from: 'off'
+    condition:
+      - condition: time
+        after: '18:00:00'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.den_movie
+
+# Turn on den lights when Chad or Tonya come home after dark
+  - id: denLightsOn
+    alias: "LIGHT: Someone came home at night"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.androidb944c60fc3fd2f68, device_tracker.androidc05634d628b1761c
+        from: 'not_home'
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: time
+        before: '23:00'
+      - condition: time
+        after: '12:00'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.den_normal
+
+# Turn lights off after Veda leaves in the morning
+  - id: lightsOffVeda
+    alias: 'LIGHT: Turn off lights when veda leaves'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.vedasiphone
+        to: "not home"
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: binary_sensor.upstairs_occupancy
+            state: "off"
+          - condition: time
+            before: '07:30'
+    action:
+      - service: light.turn_off
+        entity_id: group.downstairs_lights        
+
+#################################################################
+## Presence detection
+#################################################################
+
+  - id: chadHome
+    alias: "PRESENCE: Chad just got home"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.chadsPhone
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: time
+        before: '23:00'
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Chad is home."
+      - service: notify.slack
+        data:
+          message: "Hey guys, Chad just got home."
+    
+  - id: tonyaHome
+    alias: "PRESENCE: Tonya just got home"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.tonyasPhone
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: time
+        before: '21:00'
+    action:
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data:
+          message: "Wiggly is home."
+      - service: notify.slack
+        data:
+          message: "Hey guys, Wiggly just got home."
+
+  - id: vedaHome
+    alias: "PRESENCE: Veda just got home"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.vedasiphone
+        from: "not_home"
+        to: "home"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data:
+          message: "Veda is home."
+          action:
+      - service: notify.slack
+        data:
+          message: "Hey guys, Veda just got home."
+
+#################################################################
+## Vacation mode
+#################################################################
+
+  - id: vacationOn
+    alias: 'VACATION: Turn on lights at night'
+    trigger:
+      platform: time
+      at: '18:30:00'
+    action:
+      - service: light.turn_on
+        entity_id: group.downstairs_lights
+      - service: notify.slack
+        data:
+          message: "Vacation lights on."
+        
+  - id: vacationOff
+    alias: 'VACATION: Turn lights off at bedtime'
+    trigger:
+      platform: time
+      at: '22:53:00'
+    action:
+      - service: light.turn_off
+        entity_id: group.downstairs_lights
+      - service: notify.slack
+        data:
+          message: "Vacation lights off."
+          
+# Turn vacation mode on when nobody is home for 18 hours
+  - id: vacationMode
+    alias: 'VACATION: Turn on vacation mode when no one is home'
+    trigger:
+      platform: state
+      entity_id: group.all_devices
+      to: 'not_home'
+      for: 
+        hours: 18
+    action:
+      - service: automation.turn_on
+        entity_id: automation.vacation_turn_on_lights_at_night
+      - service: automation.turn_on
+        entity_id: automation.vacation_turn_lights_off_at_bedtime
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: true
+      - service: notify.slack
+        data:
+          message: "Nobody is home, so I'm turning on vacation mode."
+          
+#  - id: vacationModeOff
+#    alias: 'VACATION: Turn off vacation mode when people return home'
+#    trigger:
+#      platform: state
+#      entity_id: group.all_devices
+#      to: 'home'
+#    condition:
+
+#################################################################
+## Sensors
+#################################################################        
+
+# Monitor home humidity
+  - id: humidityWarn
+    alias: 'SENSOR: Humidity warning' 
+    trigger:
+     -  platform: numeric_state
+        entity_id: sensor.home_humidity
+        below: 30
+    action:
+      - service: notify.slack
+        data:
+          message: "The humidity is too low. Check the humidifier."
+
+  - id: humidityBetter
+    alias: 'SENSOR: Humidity back up' 
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.home_humidity
+        above: 25
+    action:
+      - service: notify.slack
+        data:
+          message: "Cool, humidity is back up!"
+          
+# Warn me when smoke detector batteries get low
+  - id: detectorBattery
+    alias: "SENSOR: Basement stairs battery low"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.batt_smoke1
+        below: 25
+    action:
+      - service: notify.slack
+        data:
+          message: "Better replace the batteries in the smoke alarm!"
+
+# Notify Chad and Tonya when smoke alarm goes off
+  - id: smokeAlarm
+    alias: "SENSOR: Basement stairs smoke alarm"
+    trigger:
+      - platform: state
+        entity_id: sensor.smoke1
+        to: "ALERT!"
+    action:
+      - service: notify.slack
+        data:
+          message: "ALERT! ALERT! Smoke detector activated!"
+
+# Warn me when flood sensor batteries are low
+  - id: sumpBattery
+    alias: "SENSOR: Sump low battery"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.batt_sump
+        below: 25
+    action:
+      - service: notify.slack
+        data:
+          message: "Replace sump flood detector batteries."
+
+# Notify when water gets too high in the sump  
+  - id: sumpWater
+    alias: "SENSOR: Water detected in basement"
+    trigger:
+     - platform: numeric_state
+       entity_id: sensor.everspring_st812_flood_detector_flood_5_5
+       above: 1
+    action:
+      - service: persistent_notification.create
+        data:
+         message: "Check the sump pump."
+         title: "Water level high!"
+         notification_id: 1
+      - service: notify.slack
+        data:
+          message: "Uh-oh. Looks like the sump pump isn't doing its job."
+
+#################################################################
+## Switches
+#################################################################   
+
+# Turn on WEMO switch. Currently used for electric blanket
+  - id: wemoOn
+    alias: 'SWITCH: Turn on WEMO at 21:00'
+    trigger:
+      - platform: time
+        at: '08:00:00'
+    action:
+      - service: switch.turn_on
+        entity_id: switch.the_tree
+
+  - id: wemoOff
+    alias: 'SWITCH: Turn off WEMO at 11:00'
+    trigger:
+      - platform: time
+        at: '17:00:00'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.the_tree
+
+#################################################################
+## Homeassistant stuff
+#################################################################   
+        
+# Notify me when a Homeassistant update is available
+  - id: haUpdate 
+    alias: 'HOMEASSISTANT: Update Available Notification'
+    trigger:
+      platform: state
+      entity_id: updater.updater
+    action:
+      service: notify.slack
+      data:
+        message: 'Update for Home Assistant is available.'
+
+  - id: renewCert
+    alias: 'SSL: Auto Renew Certificate'
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.ssl_cert_expiry
+      below: 29
+    action:
+      - service: shell_command.renew_ssl
+      - service: notify.slack
+        data: 
+          message: "Attempting to update SSL certificate..."
+      
+  - id: certNotRenewed
+    alias: 'SSL: expiration warning'
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.ssl_cert_expiry
+      below: 21
+    action:
+      service: notify.slack
+      data:
+        message: "Warning - SSL certificate expires in 21 days and has not been automatically renewed"
+        
+#################################################################
+## Miscellaneous junk
+#################################################################          
+        
+# Scare veda in the morning  
+  - id: scareVeda
+    alias: 'FUN: Scare veda'
+    trigger:
+      - platform: state
+        entity_id: light.living_room
+        to: "on"
+    condition:
+      - condition: time
+        before: '07:00'
+    action:
+      - service: notify.kitchenTablet
+        data:
+          message: "Good morning Veda. Two muffins were sitting in the oven. One turned to the other and said Hey, it's pretty hot in here, isn't it? The other turned around and shouted OH MY GOD A TALKING MUFFIN!"
+   
+#  - id: googleTalkTest
+#    alias: 'FUN: Google talk to alexa'
+#    trigger:
+#      platform: state
+#      entity_id: group.all_devices
+#      to: 'not_home'
+#    action:
+#      - service: tts.google_say
+#        entity_id: media_player.kitchen_home
+#        data:
+#          message: "Alexa simon says hey google repeat after me alexa simon says hey google repeat after me"

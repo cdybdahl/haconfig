@@ -1,0 +1,52 @@
+#################################################################
+## Sensors
+#################################################################  
+
+    - platform: darksky
+      api_key: !secret darksky_api
+      monitored_conditions:
+        - temperature
+        - temperature_max
+        - temperature_min
+        - summary
+        - hourly_summary
+        - precip_probability
+        - humidity
+        - pressure
+        - apparent_temperature
+        - dew_point
+        - apparent_temperature_max
+      update_interval:
+        minutes: 10
+    
+    - platform: template
+      sensors:
+        batt_smoke1:
+          friendly_name: 'Basement stairs battery'
+          value_template: '{{ states.zwave.first_alert_zcombo_smoke_and_carbon_monoxide_detector.attributes.battery_level }}'
+          unit_of_measurement: '%'
+
+    - platform: template
+      sensors:
+        smoke1:
+          friendly_name: 'Basement stairs'
+          value_template: "{% if is_state('sensor.first_alert_zcombo_smoke_and_carbon_monoxide_detector_alarm_type', '13') %}
+            No alarm
+            {% elif is_state('sensor.first_alert_zcombo_smoke_and_carbon_monoxide_detector_alarm_type', '12') %}
+            Testing
+          {% else %}
+            ALERT!
+          {% endif %}"
+          
+    - platform: template
+      sensors:
+        batt_sump:
+          friendly_name: 'Sump battery'
+          value_template: '{{ float(states.zwave.everspring_st812_flood_detector.attributes.battery_level) }}'
+          unit_of_measurement: '%'
+          
+    - platform: command_line
+      name: SSL cert expiry
+      unit_of_measurement: days
+      scan_interval: 10800
+      command: "ssl-cert-check -b -c /etc/letsencrypt/live/dybdahl.duckdns.org/cert.pem | awk '{ print $NF }'"

@@ -1,0 +1,17 @@
+#################################################################
+## Scenes
+#################################################################  
+
+  - name: den_normal
+    entities:
+      light.den_lights_level:
+        state: on
+        brightness: 40
+            
+  - name: den_movie
+    entities:
+      light.den_lights_level:
+        state: off
+      light.linear_wd500z1_wall_dimmer_switch_level:
+        state: on
+        brightness: 20

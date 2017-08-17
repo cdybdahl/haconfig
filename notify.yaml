@@ -1,0 +1,35 @@
+#################################################################
+## Notify
+#################################################################  
+
+  - name: slack
+    platform: slack
+    api_key: !secret slack_api
+    default_channel: '#our_house'
+
+#################################################################
+## Deprecated stuff
+#################################################################  
+# Telegram
+#  - telegram_bot:
+#    platform: polling
+#    api_key: 316564033:AAHLkvd3HlRZADwQFOphJaP090C_7dkZ-3g
+#    allowed_chat_ids:
+#      - 218682389
+#      - 319073217
+  
+#  - name: HomeAssistant
+#    platform: telegram
+#    chat_id: 218682389
+
+#  - name: wiggly
+#    platform: telegram
+#    chat_id: 319073217
+    
+# - name: nexus5x
+#    platform: lannouncer
+#    host: 192.168.1.105
+#
+#  - name: kitchenTablet
+#    platform: lannouncer
+#    host: 192.168.1.214

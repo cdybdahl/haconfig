@@ -1,0 +1,6 @@
+#################################################################
+## Shell commands
+#################################################################  
+
+# renew SSL certificate
+   renew_ssl: ~/certbot/certbot-auto renew --quiet --no-self-upgrade --standalone --preferred-challenges http-01
