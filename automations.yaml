@@ -16,9 +16,6 @@
     action:
       - service: light.turn_on
         entity_id: light.front_door
-      - service: notify.slack
-        data:
-          message: "Hey guys, I turned on the front door light for you."
 
   - id: porchLightOff
     alias: 'LIGHT: Turn off front door at sunrise'
@@ -29,9 +26,6 @@
     action:
       - service: light.turn_off
         entity_id: light.front_door
-      - service: notify.slack
-        data:
-          message: "Hey guys, I turned off the front door light for you."
 
 # Office light timer
   - id: officeLightOn
@@ -55,9 +49,6 @@
     action:
       - service: light.turn_on
         entity_id: group.office_lights
-      - service: notify.slack
-        data:
-          message: "Hey guys, I just turned on the office lights."
 
   - id: officeLightOff
     alias: 'LIGHTS: Turn office lights off at EOD'
@@ -67,9 +58,6 @@
     action:
       - service: light.turn_off
         entity_id: group.office_lights
-      - service: notify.slack
-        data:
-          message: "Hey guys, I just turned off the office lights."
 
 # Turn off den lights when Roku starts playing after dark
   - id: movieScene
@@ -216,10 +204,10 @@
     alias: 'VACATION: Turn on vacation mode when no one is home'
     trigger:
       platform: state
-      entity_id: group.all_devices
+      entity_id: group.family
       to: 'not_home'
       for: 
-        hours: 18
+        hours: 12
     action:
       - service: automation.turn_on
         entity_id: automation.vacation_turn_on_lights_at_night
@@ -233,13 +221,33 @@
         data:
           message: "Nobody is home, so I'm turning on vacation mode."
           
-#  - id: vacationModeOff
-#    alias: 'VACATION: Turn off vacation mode when people return home'
-#    trigger:
-#      platform: state
-#      entity_id: group.all_devices
-#      to: 'home'
-#    condition:
+  - id: vacationModeOff
+    alias: 'VACATION: Turn off vacation mode when people return home'
+    trigger:
+      platform: state
+      entity_id: group.family
+      to: 'home'
+    condition:
+      condition: template:
+      value_template: '{{ states.climate.thermostat.attributes.away_mode == on }}'
+    action:
+      - service: automation.turn_off
+        entity_id: automation.vacation_turn_on_lights_at_night
+      - service: automation.turn_off
+        entity_id: automation.vacation_turn_lights_off_at_bedtime
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: false
+      - service: notify.slack
+        data:
+          message: "Welcome back! I've turned off vacation mode. Hopefully Kevin is still alive."
+      - delay: '00:03:00'
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data:
+          message: "Welcome back! I've turned off vacation mode. Hopefully Kevin is still alive."
+        
 
 #################################################################
 ## Sensors
