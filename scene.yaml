@@ -14,4 +14,4 @@
         state: off
       light.linear_wd500z1_wall_dimmer_switch_level:
         state: on
-        brightness: 20
+        brightness: 30

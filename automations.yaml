@@ -3,6 +3,40 @@
 #################################################################
 
 #################################################################
+## The house talks to us
+#################################################################
+
+  - id: dailyDybdahl
+    alias: 'TALK: Daily Dybdahl'
+    trigger:
+      - platform: state
+        entity_id: light.linear_wd500z1_wall_dimmer_switch_level
+        to: "on"
+    action:
+      - service: script.turn_on
+        entity_id: script.greeting
+        
+  - id: goodnight
+    alias: 'TALK: Good night'
+    trigger:
+      - platform: state
+        entity_id: light.linear_wd500z1_wall_dimmer_switch_level
+        to: "off"
+    condition:
+      - condition: time
+        after: '22:00'
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Good night. I'll turn off the rest of the lights in a few minutes for you."
+      - delay: '00:03:00'
+      - service: light.turn_off
+        entity_id: group.downstairs_lights, group.living_room_lights
+      - service: remote.turn_off
+        entity_id: remote.den
+      
+#################################################################
 ## Lights
 #################################################################
 
@@ -228,7 +262,7 @@
       entity_id: group.family
       to: 'home'
     condition:
-      condition: template:
+      condition: template
       value_template: '{{ states.climate.thermostat.attributes.away_mode == on }}'
     action:
       - service: automation.turn_off
@@ -405,7 +439,7 @@
       - condition: time
         before: '07:00'
     action:
-      - service: notify.kitchenTablet
+      - service: tts.google_say
         data:
           message: "Good morning Veda. Two muffins were sitting in the oven. One turned to the other and said Hey, it's pretty hot in here, isn't it? The other turned around and shouted OH MY GOD A TALKING MUFFIN!"
    

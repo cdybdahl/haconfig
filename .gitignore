@@ -1,4 +1,4 @@
-www
+*.jpg
 secrets.yaml
 ecobee.conf
 emulated_hue_ids.json

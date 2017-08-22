@@ -17,9 +17,13 @@
       - group.indoor
       - zone.home
       - switch.the_tree
-      - switch.pc
-      - script.greeting
       - persistent_notification.1
+      - sensor.den
+  zones:
+    name: zones
+    view: yes
+    entities:
+      - group.floorplan
   weather:
     view: yes
     entities:
@@ -42,9 +46,16 @@
       - group.Light_automations
       - group.Sensor_automations
       - group.Presence_automations
+      - group.Talking_automations
       - group.Vacation_automations
       - group.Other_automations
-      
+ 
+#################################################################
+## Floorplan
+#################################################################
+  floorplan:
+    - binary_sensor.floorplan
+ 
 #################################################################
 ## Lights
 #################################################################
@@ -54,6 +65,7 @@
     - light.office_1
     - light.office_2
   downstairs lights:
+    - light.foyer
     - light.linear_wd500z1_wall_dimmer_switch_level
     - light.kitchen_sink
     - light.den_lights_level
@@ -115,6 +127,7 @@
     - media_player.roku_4e756g050640
     - media_player.roku_5s467y285888
     - media_player.kitchen_home
+    - media_player.bedroom_tv
 
 #################################################################
 ## Harmony hub -- not too useful
@@ -154,6 +167,9 @@
     - automation.fun_scare_veda
     - automation.homeassistant_update_available_notification
     - automation.fun_google_talk_to_alexa
+  Talking automations:
+    - automation.talk_daily_dybdahl
+    - automation.talk_good_night 
 
 #################################################################
 ## Deprecated stuff

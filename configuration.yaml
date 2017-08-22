@@ -15,6 +15,9 @@ homeassistant:
 #################################################################
   
   customize:
+     binary_sensor.floorplan:
+       custom_ui_state_card: floorplan
+       config: !include floorplan.yaml
      sensor.weather_humidity:
        icon: mdi:water-percent
      sensor.weather_precip_probability:
@@ -81,6 +84,24 @@ history:
       - group.network
 
 #################################################################
+## Floorplan
+#################################################################
+
+# Need a dummy sensor to make floorplan work
+
+binary_sensor:
+  - platform: mqtt
+    state_topic: dummy/floorplan/sensor
+    name: Floorplan
+
+panel_custom:
+  - name: floorplan
+    sidebar_title: Floorplan
+    sidebar_icon: mdi:home
+    url_path: floorplan
+    config: !include floorplan.yaml
+      
+#################################################################
 ## HTTP(S) access
 #################################################################
 
@@ -134,7 +155,17 @@ emulated_hue:
   exposed_domains:
     - light
     - switch
-    
+ 
+#################################################################
+##  Media  players
+#################################################################
+
+media_player:
+  - platform: samsungtv
+    host: 192.168.1.131
+    mac: BC:8C:CD:51:A9:FA
+    name: Bedroom TV
+ 
 #################################################################
 ## Text to speech
 #################################################################
@@ -145,6 +176,13 @@ tts:
     cache_dir: /tmp/tts
     time_memory: 300
 
+#################################################################
+## IFTTT
+#################################################################
+
+ifttt:
+  key: !secret ifttt_key
+  
 #################################################################
 ## Enable Cloud MQTT broker
 #################################################################
@@ -182,13 +220,10 @@ camera:
 zwave:
   usb_path: /dev/ttyACM0
   config_path: /srv/hass/src/python-openzwave/openzwave/config
+  device_config:
+    light.linear_wd500z1_wall_dimmer_switch_level:
+      polling_intensity: 1
 
-#################################################################
-## IFTTT
-#################################################################
-
-ifttt:
-  key: !secret ifttt_key
 
 #################################################################
 ## Includes
@@ -202,7 +237,3 @@ script: !include_dir_named scripts
 sensor: !include sensor.yaml
 shell_command: !include shell.yaml
 zone: !include zones.yaml
-
-#################################################################
-## Deprecated stuff
-#################################################################
