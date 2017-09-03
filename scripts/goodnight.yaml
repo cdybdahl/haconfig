@@ -1,11 +1,15 @@
 #################################################################
 ## Goodnight script
 #################################################################
-
 alias: Goodnight
 sequence:
+  - service: light.turn_on
+    entity_id: light.bedroom
   - delay: '00:02:00'
   - service: light.turn_off
     entity_id: group.downstairs_lights, group.living_room_lights
   - service: remote.turn_off
     entity_id: remote.den
+  - delay: '00:04:00'
+  - service: light.turn_off
+    entity_id: light.bedroom

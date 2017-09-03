@@ -56,3 +56,24 @@
         den:
           value_template: '{{ states.remote.den.attributes.current_activity }}'
           friendly_name: 'Den'
+          
+    - platform: template
+      sensors:
+        template_calendar_house:
+           value_template: >
+             {{ strptime(states.calendar.familydybdahlgmailcom.attributes.start_time, "%Y-%m-%d %H:%M:%S").strftime("%A, %B %d") }}:
+             {{ states.calendar.familydybdahlgmailcom.attributes.message }}
+           friendly_name: Next task
+           unit_of_measurement: ''
+           
+    - platform: template
+      sensors:
+        kitchen_sliding_window:
+          value_template: '{% if is_state("sensor.kitchen_sliding_window_alarm_level", "0") %}Closed{% else %}Open{% endif %}'
+          friendly_name: Kitchen window
+          
+    - platform: template
+      sensors:
+       current_month:
+         value_template: "{{ now().strftime('%B') }}"
+         friendly_name: 'Current Month'

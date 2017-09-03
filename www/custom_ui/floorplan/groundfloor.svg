@@ -36,14 +36,14 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1857"
+     inkscape:window-width="1858"
      inkscape:window-height="1057"
      id="namedview1473"
      showgrid="false"
      inkscape:zoom="0.22806713"
-     inkscape:cx="1001.8847"
+     inkscape:cx="1483.9381"
      inkscape:cy="1101.5692"
-     inkscape:window-x="-8"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg1471" />
@@ -3494,5 +3494,16 @@
      inkscape:label="Foyer">
     <title
        id="title5116">Foyer</title>
+  </rect>
+  <rect
+     style="opacity:0.1;fill:#eeeeef;fill-opacity:1;stroke-width:0.75"
+     id="light.dining_room_level"
+     width="412.36322"
+     height="540.07031"
+     x="1867.0391"
+     y="1069.2461"
+     inkscape:label="Dining room">
+    <title
+       id="title5110">Dining room</title>
   </rect>
 </svg>

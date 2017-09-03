@@ -37,13 +37,14 @@
              - light.front_door
              - light.linear_wd500z1_wall_dimmer_switch_level
              - group.living_room_lights
+             - light.dining_room_level
           states:
             - state: 'on'
               class: 'light-on'
             - state: 'off'
               class: 'light-off'
           action:
-            domain: homeassistant   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
+            domain: light   # This optional parameter allows you to use other services such as homeassistant.toggle like here.
             service: toggle
             
         - name: Presence
@@ -51,9 +52,9 @@
             - device_tracker.bmwx3_bmwx3
           states:
             - state: 'home'
-              class: 'car.home'
+              class: 'car-home'
             - state: 'not home'
-              class: 'car.gone'          
+              class: 'car-gone'          
              
 #        - name: Switches
 #          entities:

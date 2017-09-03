@@ -5,41 +5,345 @@
 #################################################################
 ## The house talks to us
 #################################################################
-
   - id: dailyDybdahl
     alias: 'TALK: Daily Dybdahl'
     trigger:
       - platform: state
         entity_id: light.linear_wd500z1_wall_dimmer_switch_level
         to: "on"
+    condition:
+      - condition: time
+        after: '07:00:00'
+        before: '20:00:00'
     action:
       - service: script.turn_on
         entity_id: script.greeting
+      - service: scene.turn_on
+        entity_id: scene.kitchen_day
         
-  - id: goodnight
-    alias: 'TALK: Good night'
+#  - id: goodnight
+#    alias: 'TALK: Good night'
+#    trigger:
+#      - platform: state
+#        entity_id: light.linear_wd500z1_wall_dimmer_switch_level
+#        to: "off"
+#    condition:
+#      - condition: time
+#        after: '22:00'
+#    action:
+#      - service: tts.google_say
+#        entity_id: media_player.kitchen_home
+#        data:
+#          message: "Good night. I'll turn off the rest of the lights in a few minutes for you."
+#      - delay: '00:03:00'
+#      - service: light.turn_off
+#        entity_id: group.downstairs_lights, group.living_room_lights
+#      - service: remote.turn_off
+#        entity_id: remote.den
+
+#################################################################
+## Football time
+#################################################################
+  - id: turnOnFootballAutomations
+    alias: 'HT: Turn football on'
     trigger:
-      - platform: state
-        entity_id: light.linear_wd500z1_wall_dimmer_switch_level
-        to: "off"
+      - platform: time
+        at: '00:00:00'
     condition:
-      - condition: time
-        after: '22:00'
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'September'
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'October'   
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'November'
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'December'  
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'January'
+    action:
+      - service: automation.turn_on
+        entity_id: group.football_automations      
+
+  - id: turnOffFootballAutomations
+    alias: 'HT: Turn football off'
+    trigger:
+      - platform: time
+        at: '00:00:00'
+    condition:
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'February'
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'March'   
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'April'
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'May'  
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'June'
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'July'  
+          - condition: state
+            entity_id: sensor.current_month
+            state: 'August'
+    action:
+      - service: automation.turn_off
+        entity_id: group.football_automations          
+        
+  - id: footballSunday
+    alias: 'HT: Football Sunday'
+    initial_state: 'off'
+    trigger:
+      - platform: time
+        at: '11:30:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: group.chadtonya
+            state: home
+          - condition: time
+            weekday:
+              - sun
     action:
       - service: tts.google_say
         entity_id: media_player.kitchen_home
         data:
-          message: "Good night. I'll turn off the rest of the lights in a few minutes for you."
-      - delay: '00:03:00'
-      - service: light.turn_off
-        entity_id: group.downstairs_lights, group.living_room_lights
-      - service: remote.turn_off
+          message: "30 minutes to sunday football! Grab a bloody mary and park your butt on the couch. I'm getting things ready."
+      - service: script.turn_on
+        entity_id: script.tv
+        
+  - id: footballSundayGetHome
+    alias: 'HT: Football Sunday Get Home'
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: group.chadtonya
+        to: home
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            after: '12:00:00'
+            before: '18:30:00'
+            weekday:
+              - sun
+    action:
+      - service: script.turn_on
+        entity_id: script.tv
+      - delay: 00:01:30
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Looks like you guys just got home and football is happening. I turned the game on for you."
+          
+  - id: footballSundayNightGetHome
+    alias: 'HT: Football Sunday Night Get Home'
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: group.chadtonya
+        to: home
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            after: '07:01:00'
+            before: '22:00:00'
+            weekday:
+              - sun
+    action:
+      - service: script.turn_on
+        entity_id: script.tv
+      - service: remote.send_command
         entity_id: remote.den
-      
+        data:
+          device: 45943852
+          command: ['4','NumberEnter']
+      - delay: 00:01:30
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Looks like you guys just got home and football is happening. I turned the game on for you."
+          
+  - id: footballSundayNight
+    alias: 'HT: Football Sunday Night'
+    initial_state: 'off'
+    trigger:
+      - platform: time
+        at: '19:00:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: group.chadtonya
+            state: home
+          - condition: time
+            weekday:
+              - sun
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "It's time for Sunday night football. I'm getting things ready for you."
+      - service: script.turn_on
+        entity_id: script.tv
+      - service: remote.send_command
+        entity_id: remote.den
+        data:
+          device: 45943852
+          command: ['4','NumberEnter']
+   
+  - id: footballMonday
+    alias: 'HT: Football Monday'
+    initial_state: 'off'
+    trigger:
+      - platform: time
+        at: '19:10:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: group.chadtonya
+            state: home
+          - condition: time
+            weekday:
+              - mon
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Are you ready for some football?"
+      - service: script.turn_on
+        entity_id: script.roku
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.roku_4e756g050640
+          source: 'WatchESPN' 
+      - delay: 00:00:10
+      - service: remote.send_command
+        entity_id: remote.den
+        data:
+          device: 45943853
+          command: 'Play'
+      - delay: 00:00:03
+      - service: remote.send_command
+        entity_id: remote.den
+        data:
+          device: 45943853
+          command: 'Play'          
+          
+  - id: footballMondayGetHome
+    alias: 'HT: Football Monday Get Home'
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: group.chadtonya
+        to: home
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            after: '19:10:01'
+            before: '22:00:00'
+            weekday:
+              - mon
+    action:
+      - service: script.turn_on
+        entity_id: script.roku
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.roku_4e756g050640
+          source: 'WatchESPN' 
+      - service: remote.send_command
+        entity_id: remote.den
+        data:
+          device: 45943853
+          command: 'Play'
+      - delay: 00:00:03
+      - service: remote.send_command
+        entity_id: remote.den
+        data:
+          device: 45943853
+          command: 'Play'
+      - delay: 00:01:30
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Looks like you guys just got home and football is happening. I turned the game on for you."
+   
+  - id: footballThursday
+    alias: 'HT: Football Thursday'
+    initial_state: 'off'
+    trigger:
+      - platform: time
+        at: '19:00:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: group.chadtonya
+            state: home
+          - condition: time
+            weekday:
+              - thu
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "It's Thursday night football time! Launching amazon video."
+      - service: script.turn_on
+        entity_id: script.roku
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.roku_4e756g050640
+          source: 'Amazon Video'
+
+  - id: footballThursdayGetHome
+    alias: 'HT: Football Thursday Get Home'
+    initial_state: 'off'
+    trigger:
+      - platform: state
+        entity_id: group.chadtonya
+        to: home
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            after: '19:00:01'
+            before: '22:00:00'
+            weekday:
+              - thu
+    action:
+      - service: script.turn_on
+        entity_id: script.roku
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.roku_4e756g050640
+          source: 'Amazon Video' 
+      - delay: 00:01:30
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Looks like you guys just got home and football is happening. I turned the game on for you."      
+          
 #################################################################
 ## Lights
 #################################################################
-
 # Front door light timer
   - id: porchLightOn
     alias: 'LIGHT: Turn on front door at sunset'
@@ -71,7 +375,7 @@
       - condition: and
         conditions:
           - condition: state
-            entity_id: device_tracker.chadssurfacebook
+            entity_id: device_tracker.chadsPhone
             state: home
           - condition: time
             weekday:
@@ -89,6 +393,14 @@
     trigger:
       - platform: time
         at: '16:30:00'
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri     
     action:
       - service: light.turn_off
         entity_id: group.office_lights
@@ -112,7 +424,7 @@
     alias: "LIGHT: Someone came home at night"
     trigger:
       - platform: state
-        entity_id: device_tracker.androidb944c60fc3fd2f68, device_tracker.androidc05634d628b1761c
+        entity_id: group.chadtonya
         from: 'not_home'
         to: 'home'
     condition:
@@ -121,8 +433,6 @@
         state: 'below_horizon'
       - condition: time
         before: '23:00'
-      - condition: time
-        after: '12:00'
     action:
       - service: scene.turn_on
         entity_id: scene.den_normal
@@ -147,9 +457,43 @@
         entity_id: group.downstairs_lights        
 
 #################################################################
+## Windows
+#################################################################        
+  - id: windowOpened
+    alias: "WINDOW: Kitchen opened"
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_sliding_window
+        to: "Open"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "The kitchen sliding window has been opened. Setting thermostat to away mode."
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: true
+          
+  - id: windowClosed
+    alias: "WINDOW: Kitchen closed"
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_sliding_window
+        to: "Closed"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "The kitchen sliding window has been closed. Resuming normal thermostat settings."
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: false
+          
+#################################################################
 ## Presence detection
 #################################################################
-
   - id: chadHome
     alias: "PRESENCE: Chad just got home"
     trigger:
@@ -208,9 +552,9 @@
 #################################################################
 ## Vacation mode
 #################################################################
-
   - id: vacationOn
     alias: 'VACATION: Turn on lights at night'
+    initial_state: 'off'
     trigger:
       platform: time
       at: '18:30:00'
@@ -223,6 +567,7 @@
         
   - id: vacationOff
     alias: 'VACATION: Turn lights off at bedtime'
+    initial_state: 'off'
     trigger:
       platform: time
       at: '22:53:00'
@@ -286,7 +631,6 @@
 #################################################################
 ## Sensors
 #################################################################        
-
 # Monitor home humidity
   - id: humidityWarn
     alias: 'SENSOR: Humidity warning' 
@@ -433,15 +777,21 @@
     alias: 'FUN: Scare veda'
     trigger:
       - platform: state
-        entity_id: light.living_room
+        entity_id: group.downstairs_lights
         to: "on"
-    condition:
-      - condition: time
-        before: '07:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            after: '07:01:00'
+            before: '22:00:00'
+            weekday:
+              - sun
     action:
       - service: tts.google_say
+        entity_id: media_player.kitchen_home
         data:
-          message: "Good morning Veda. Two muffins were sitting in the oven. One turned to the other and said Hey, it's pretty hot in here, isn't it? The other turned around and shouted OH MY GOD A TALKING MUFFIN!"
+          message: "Good morning Veda. It's schooltime! You have to learn. And go to school!You have to learn learn learn learn learn. Have a wonderful day at school!"
    
 #  - id: googleTalkTest
 #    alias: 'FUN: Google talk to alexa'

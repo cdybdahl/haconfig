@@ -1,0 +1,9 @@
+#################################################################
+## Turn on TV (Fox is default channel)
+#################################################################
+alias: tv
+sequence:
+  - service: remote.turn_on
+    entity_id: remote.den
+    data:
+      activity: "27223099"

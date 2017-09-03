@@ -15,3 +15,9 @@
       light.linear_wd500z1_wall_dimmer_switch_level:
         state: on
         brightness: 30
+        
+  - name: kitchen_day
+    entities: 
+      light.linear_wd500z1_wall_dimmer_switch_level:
+        state: on
+        brightness: 200

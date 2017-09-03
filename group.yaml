@@ -5,20 +5,17 @@
 #################################################################
 ## Set up tabs
 #################################################################
-
   default_view:
     view: yes
     entities:
       - group.family
       - group.outdoor
-      - group.office_lights
+      - group.upstairs_lights
       - group.downstairs_lights
-      - group.living_room_lights
       - group.indoor
       - zone.home
-      - switch.the_tree
+      - group.calendar
       - persistent_notification.1
-      - sensor.den
   zones:
     name: zones
     view: yes
@@ -36,6 +33,8 @@
       - group.Smoke_detectors
       - group.water_monitor
       - sensor.ssl_cert_expiry
+      - switch.the_tree
+      - group.windows
   media players:
     view: yes
     entities:
@@ -49,6 +48,7 @@
       - group.Talking_automations
       - group.Vacation_automations
       - group.Other_automations
+      - group.football_automations
  
 #################################################################
 ## Floorplan
@@ -69,9 +69,16 @@
     - light.linear_wd500z1_wall_dimmer_switch_level
     - light.kitchen_sink
     - light.den_lights_level
+    - light.dining_room_level
+    - group.living_room_lights
   living room lights:
     - light.living_room
     - light.living_room_lamp
+  bedroom:
+    - light.bedroom
+  upstairs lights:
+    - group.office_lights
+    - light.bedroom
 
 #################################################################
 ## Device trackers
@@ -81,6 +88,9 @@
     - device_tracker.tonyasphone
     - device_tracker.vedasiphone
     - device_tracker.bmwx3_bmwx3
+  chadTonya:
+    - device_tracker.chadsphone
+    - device_tracker.tonyasphone 
   work:
     - device_tracker.chadssurfacebook
     
@@ -117,6 +127,11 @@
   water monitor:
     - sensor.everspring_st812_flood_detector_flood
     - sensor.batt_sump
+  windows:
+    - sensor.kitchen_sliding_window
+  calendar:
+    - camera.calendar
+    - sensor.template_calendar_house
     
 #################################################################
 ## Media players
@@ -167,19 +182,17 @@
     - automation.fun_scare_veda
     - automation.homeassistant_update_available_notification
     - automation.fun_google_talk_to_alexa
+    - automation.ht_Turn_football_on
+    - automation.ht_Turn_football_off
   Talking automations:
     - automation.talk_daily_dybdahl
     - automation.talk_good_night 
-
-#################################################################
-## Deprecated stuff
-#################################################################
-#
-#  cameras:
-#    view: yes
-#    entities:
-#      - group.cameraGroup
-#
-#   cameraGroup:
-#    - camera.Kitchen
-#    - camera.Nexus4
+  Football automations:
+    - automation.ht_football_sunday
+    - automation.ht_football_sunday_get_home
+    - automation.ht_football_sunday_night
+    - automation.ht_football_sunday_night_get_home
+    - automation.ht_football_monday
+    - automation.ht_football_monday_get_home
+    - automation.ht_football_thursday
+    - automation.ht_football_thursday_get_home
