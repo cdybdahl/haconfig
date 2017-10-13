@@ -17,9 +17,10 @@ updater:
 sun:
 config:
 discovery:
-frontend:
 conversation:
 logbook:
+frontend:
+  themes: !include themes.yaml
 recorder:
   db_url: !secret mysql_login
 history:
@@ -34,7 +35,14 @@ history:
       - group.downstairs_lights
       - group.family
       - group.network
-
+variable:
+  temps_delay:
+    restore: 'true'
+    value: 0
+    attributes:
+      icon: mdi:alarm
+      friendly_name: 'Veda delay'
+    
 #################################################################
 ## Floorplan
 #################################################################
@@ -124,6 +132,13 @@ tts:
 google:
   client_id: !secret google_clientid
   client_secret: !secret google_clientsecret
+  
+#################################################################
+## Todoist
+#################################################################   
+calendar:
+  - platform: todoist
+    token: !secret todoist_api
 
 #################################################################
 ## Widgets
@@ -168,6 +183,7 @@ remote:
 zwave:
   usb_path: /dev/ttyACM0
   config_path: /srv/hass/src/python-openzwave/openzwave/config
+  network_key: "0xD0,0x71,0x33,0xF8,0x07,0x52,0x0A,0x26,0x4D,0x08,0xDA,0x8B,0x62,0x9E,0xEA,0xB4"
   device_config:
     light.linear_wd500z1_wall_dimmer_switch_level:
       polling_intensity: 1

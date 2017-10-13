@@ -14,10 +14,18 @@
         state: off
       light.linear_wd500z1_wall_dimmer_switch_level:
         state: on
-        brightness: 30
+        brightness: 60
         
   - name: kitchen_day
     entities: 
       light.linear_wd500z1_wall_dimmer_switch_level:
         state: on
-        brightness: 200
+        brightness: 300
+
+  - name: morning_weekday
+    entities:
+      light.linear_wd500z1_wall_dimmer_switch_level:
+        state: on
+        brightness: 80
+      group.couch_lights:
+        state: on 

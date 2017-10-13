@@ -69,3 +69,28 @@
 #################################################################
      group.all_automations:
        hidden: false
+     group.family:
+       friendly_name: Family
+       order: 5
+     group.friends:
+       friendly_name: Friends
+       order: 5
+     group.cars:
+       friendly_name: Cars
+       order: 5
+     group.outdoor:
+       friendly_name: Outdoor
+       order: 4
+     group.upstairs_lights:
+       friendly_name: Upstairs lights
+       order: 4
+     group.downstairs_lights:
+       friendly_name: Downstairs lights
+       order: 4
+     group.indoor:
+       friendly_name: Indoor
+       order: 6
+     group.calendar:
+       friendly_name: Calendar
+       order: 7
+    

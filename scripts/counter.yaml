@@ -1,0 +1,9 @@
+#################################################################
+## Increment the veda counter
+#################################################################
+alias: counter
+sequence:
+  - service: variable.set_variable
+    data:
+      variable: temps_delay
+      value_template: '{{ (variable.state | int) + 1 }}'

@@ -8,19 +8,17 @@
   default_view:
     view: yes
     entities:
-      - group.family
       - group.outdoor
-      - group.upstairs_lights
       - group.downstairs_lights
+      - group.upstairs_lights
+      - group.family
+      - group.cars
+      - group.friends
       - group.indoor
+      - group.doors
       - zone.home
       - group.calendar
       - persistent_notification.1
-  zones:
-    name: zones
-    view: yes
-    entities:
-      - group.floorplan
   weather:
     view: yes
     entities:
@@ -35,6 +33,8 @@
       - sensor.ssl_cert_expiry
       - switch.the_tree
       - group.windows
+      - variable.temps_delay
+      - script.counter
   media players:
     view: yes
     entities:
@@ -61,7 +61,7 @@
 #################################################################
   outdoor:
     - light.front_door
-  office lights:
+  Office lights:
     - light.office_1
     - light.office_2
   downstairs lights:
@@ -70,10 +70,10 @@
     - light.kitchen_sink
     - light.den_lights_level
     - light.dining_room_level
-    - group.living_room_lights
-  living room lights:
-    - light.living_room
-    - light.living_room_lamp
+    - group.couch_lights
+  Couch lights:
+    - light.couch_left
+    - light.couch_right
   bedroom:
     - light.bedroom
   upstairs lights:
@@ -87,13 +87,25 @@
     - device_tracker.chadsphone
     - device_tracker.tonyasphone
     - device_tracker.vedasiphone
+  cars:
     - device_tracker.bmwx3_bmwx3
+    - device_tracker.volvo_volvoc30
+  friends:
+    - device_tracker.maria
+    - device_tracker.hunter
   chadTonya:
     - device_tracker.chadsphone
     - device_tracker.tonyasphone 
   work:
     - device_tracker.chadssurfacebook
+
+#################################################################
+## Locks
+#################################################################
     
+  Doors:
+    - lock.front_door_deadbolt_locked
+
 #################################################################
 ## Thermostat and occupancy
 #################################################################
@@ -102,7 +114,7 @@
     - sensor.thermostat_temperature
     - sensor.thermostat_humidity
     - sensor.upstairs_temperature
-  occupancy:
+  Occupancy:
     - binary_sensor.thermostat_occupancy
     - binary_sensor.upstairs_occupancy
     
@@ -112,6 +124,8 @@
   Smoke detectors:
     - sensor.smoke1
     - sensor.batt_smoke1
+    - sensor.smoke2
+    - sensor.batt_smoke2
   Weather conditions:
     - sensor.dark_sky_temperature
     - sensor.dark_sky_summary
@@ -124,10 +138,10 @@
     - sensor.dark_sky_daily_high_apparent_temperature
     - sensor.dark_sky_daily_low_temperature
     - sensor.dark_sky_hourly_summary
-  water monitor:
+  Water monitor:
     - sensor.everspring_st812_flood_detector_flood
     - sensor.batt_sump
-  windows:
+  Windows:
     - sensor.kitchen_sliding_window
   calendar:
     - camera.calendar
@@ -160,9 +174,11 @@
     - automation.light_turn_on_front_door_at_sunset
     - automation.light_turn_on_office_lights_when_working
     - automation.lights_turn_office_lights_off_at_eod
+    - automation.light_turn_on_lights_for_hunter
   Presence automations:
     - automation.presence_chad_just_got_home
     - automation.presence_tonya_just_got_home
+    - automation.presence_tonya_just_left_work
     - automation.presence_veda_just_got_home
   Sensor automations:
     - automation.sensor_basement_stairs_battery_low
@@ -175,11 +191,15 @@
     - automation.vacation_turn_lights_off_at_bedtime
     - automation.vacation_turn_on_lights_at_night
     - automation.vacation_turn_on_vacation_mode_when_no_one_is_home
+    - automation.away_turn_things_off_when_away
   Other automations:
+    - automation.talk_tonya_morning_commute
+    - automation.talk_tonya_evening_commute
     - automation.ssl_auto_renew_certificate
     - automation.ssl_expiration_warning
     - automation.scene_media_player_playing
     - automation.fun_scare_veda
+    - automation.fun_scare_hunter
     - automation.homeassistant_update_available_notification
     - automation.fun_google_talk_to_alexa
     - automation.ht_Turn_football_on

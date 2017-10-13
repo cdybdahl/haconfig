@@ -22,3 +22,17 @@
     longitude: -88.063
     radius: 100
     icon: mdi:home-modern
+    
+#Work Tonya
+  - name: Work
+    latitude: 43.049
+    longitude: -87.928
+    radius: 250
+    icon: mdi:domain
+
+#Dad
+  - name: Dad
+    latitude: 43.022
+    longitude: -88.249
+    radius: 150
+    icon: mdi:home

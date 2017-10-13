@@ -1,5 +1,5 @@
       name: Ground floor
-      image: /local/custom_ui/floorplan/groundfloor.svg
+      image: /local/custom_ui/floorplan/groundfloorNEW.svg
       stylesheet: /local/custom_ui/floorplan/floorplan.css
       
       # These options are optional
@@ -28,6 +28,17 @@
             else
               return "temp-high";
             '
+        - name: text_font_date
+          entities:
+             - sensor.floorplan_date
+          text_template: '${entity.state ? entity.state : "undefined"}'
+          class_template: 'return "static-text-date";'
+
+        - name: text_font_time
+          entities:
+           - sensor.floorplan_time
+          text_template: '${entity.state ? entity.state : "undefined"}'
+          class_template: 'return "static-text-time";'
 
         - name: Lights
           entities:
@@ -36,7 +47,7 @@
              - light.linear_wd500z1_wall_dimmer_switch_level
              - light.front_door
              - light.linear_wd500z1_wall_dimmer_switch_level
-             - group.living_room_lights
+             - group.couch_lights
              - light.dining_room_level
           states:
             - state: 'on'
@@ -56,14 +67,17 @@
             - state: 'not home'
               class: 'car-gone'          
              
-#        - name: Switches
-#          entities:
-#             - switch.doorbell
-#          states:
-#            - state: 'on'
-#              class: 'doorbell-on'
-#            - state: 'off'
-#              class: 'doorbell-off'
+        - name: Switches
+          entities:
+             - script.counter
+          states:
+            - state: 'on'
+              class: 'doorbell-on'
+            - state: 'off'
+              class: 'doorbell-off'
+          action:
+            domain: script
+            service: turn_on
 
 #        - name: NVR
 #          entities:

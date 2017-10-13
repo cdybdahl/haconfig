@@ -20,26 +20,44 @@
         entity_id: script.greeting
       - service: scene.turn_on
         entity_id: scene.kitchen_day
-        
-#  - id: goodnight
-#    alias: 'TALK: Good night'
-#    trigger:
-#      - platform: state
-#        entity_id: light.linear_wd500z1_wall_dimmer_switch_level
-#        to: "off"
-#    condition:
-#      - condition: time
-#        after: '22:00'
-#    action:
-#      - service: tts.google_say
-#        entity_id: media_player.kitchen_home
-#        data:
-#          message: "Good night. I'll turn off the rest of the lights in a few minutes for you."
-#      - delay: '00:03:00'
-#      - service: light.turn_off
-#        entity_id: group.downstairs_lights, group.living_room_lights
-#      - service: remote.turn_off
-#        entity_id: remote.den
+
+  - id: tonyaCommuteMorning
+    alias: 'TALK: Tonya morning commute'
+    trigger:
+      - platform: time
+        at: '07:20:00'
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: notify.slack
+        data_template:
+          message: >
+            Good morning Wiggly. You commute should be {{states('sensor.home_to_work')}} minutes today.
+
+  - id: tonyaCommuteEvening
+    alias: 'TALK: Tonya evening commute'
+    trigger:
+      - platform: time
+        at: '16:25:00'
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: notify.slack
+        data_template:
+          message: >
+            Good afternnon Wiggly. Your ride home is {{states('sensor.work_to_home')}} minutes today.
 
 #################################################################
 ## Football time
@@ -49,6 +67,8 @@
     trigger:
       - platform: time
         at: '00:00:00'
+      - platform: event
+        event_type: homeassistant_start
     condition:
       - condition: or
         conditions:
@@ -76,6 +96,8 @@
     trigger:
       - platform: time
         at: '00:00:00'
+      - platform: event
+        event_type: homeassistant_start
     condition:
       - condition: or
         conditions:
@@ -139,7 +161,9 @@
         conditions:
           - condition: time
             after: '12:00:00'
+          - condition: time
             before: '18:30:00'
+          - condition: time
             weekday:
               - sun
     action:
@@ -163,7 +187,9 @@
         conditions:
           - condition: time
             after: '07:01:00'
+          - condition: time
             before: '22:00:00'
+          - condition: time
             weekday:
               - sun
     action:
@@ -259,7 +285,9 @@
         conditions:
           - condition: time
             after: '19:10:01'
+          - condition: time
             before: '22:00:00'
+          - condition: time
             weekday:
               - mon
     action:
@@ -325,7 +353,9 @@
         conditions:
           - condition: time
             after: '19:00:01'
+          - condition: time
             before: '22:00:00'
+          - condition: time
             weekday:
               - thu
     action:
@@ -454,7 +484,27 @@
             before: '07:30'
     action:
       - service: light.turn_off
-        entity_id: group.downstairs_lights        
+        entity_id: group.downstairs_lights  
+
+# Set morning scene
+  - id: morningScene
+    alias: 'SCENE: Morning'
+    trigger:
+      - platform: time
+        at: '06:20:00'
+    condition: 
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: lock.unlock
+        entity_id: lock.front_door_deadbolt_locked
+      - service: scene.turn_on
+        entity_id: scene.morning_weekday          
 
 #################################################################
 ## Windows
@@ -549,9 +599,90 @@
         data:
           message: "Hey guys, Veda just got home."
 
+  - id: tonyaLeavingWork
+    alias: "PRESENCE: Tonya just left work"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.bmwx3_bmwx3
+        from: "Work"
+        to: "not_home"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data_template:
+          message: >
+            Wiggly is leaving work. She'll be home in {{states('sensor.work_to_home')}} minutes.
+      - service: notify.slack
+        data_template:
+          message: >
+            Hey guys, Wiggly is heading home from work. She'll be home in {{states('sensor.work_to_home')}} minutes.
+
 #################################################################
-## Vacation mode
+## Away mode
 #################################################################
+  - id: awayMode
+    alias: 'AWAY: Turn things off when away'
+    trigger:
+      platform: state
+      entity_id: group.family
+      to: 'not_home'
+    action:
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: true
+      - service: light.turn_off
+        entity_id: group.downstairs_lights, group.upstairs_lights
+      - service: remote.turn_off
+        entity_id: remote.den
+      - service: lock.lock
+        entity_id: lock.front_door_deadbolt_locked
+      - service: notify.slack
+        data:
+          message: "You guys left, so I'm shutting the house down."
+
+  - id: vedaDetectionOn
+    alias: 'AWAY: Presence for Veda on when away'
+    trigger:
+      platform: state
+      entity_id: group.chadTonya
+      to: 'not_home'
+    action:
+      - service: automation.turn_on
+        entity_id: automation.presence_veda_just_got_home
+
+  - id: vedaDetectionOff
+    alias: 'AWAY: Presence for Veda off when home'
+    trigger:
+      platform: state
+      entity_id: group.chadTonya
+      to: 'home'
+    action:
+      - service: automation.turn_off
+        entity_id: automation.presence_veda_just_got_home
+  
+  - id: returnFromAway
+    alias: 'AWAY: Return from away mode'
+    trigger:
+      platform: state
+      entity_id: group.family
+      to: 'home'
+    action:
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: false
+      - service: scene.turn_on
+        entity_id: scene.morning_weekday
+      - service: notify.slack
+        data:
+          message: "You guys got back, returning to normal operation."
+      - delay: '00:02:00'
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data:
+          message: "Welcome back! I've turned off away mode."
+  
   - id: vacationOn
     alias: 'VACATION: Turn on lights at night'
     initial_state: 'off'
@@ -783,10 +914,14 @@
       - condition: and
         conditions:
           - condition: time
-            after: '07:01:00'
-            before: '22:00:00'
+            before: '07:00:00'
+          - condition: time
             weekday:
-              - sun
+              - mon
+              - tue
+              - wed
+              - thu
+              - fri
     action:
       - service: tts.google_say
         entity_id: media_player.kitchen_home

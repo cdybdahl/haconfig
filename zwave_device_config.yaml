@@ -4,3 +4,6 @@ light.den_lights_level_3_0:
 zwave.linear_wd500z1_wall_dimmer_switch:
   ignored: false
   polling_intensity: 1
+lock.front_door_deadbolt_locked:
+  ignored: false
+  polling_intensity: 1
