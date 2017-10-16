@@ -1,0 +1,83 @@
+#################################################################
+## The house talks to us
+#################################################################
+  - id: dailyDybdahl
+    alias: 'TALK: Daily Dybdahl'
+    trigger:
+      - platform: state
+        entity_id: light.linear_wd500z1_wall_dimmer_switch_level
+        to: "on"
+    condition:
+      - condition: time
+        after: '07:00:00'
+        before: '20:00:00'
+    action:
+      - service: script.turn_on
+        entity_id: script.greeting
+      - service: scene.turn_on
+        entity_id: scene.kitchen_day
+
+  - id: tonyaCommuteMorning
+    alias: 'TALK: Tonya morning commute'
+    trigger:
+      - platform: time
+        at: '07:20:00'
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: notify.slack
+        data_template:
+          message: >
+            Good morning Wiggly. You commute should be {{states('sensor.home_to_work')}} minutes today.
+
+  - id: tonyaCommuteEvening
+    alias: 'TALK: Tonya evening commute'
+    trigger:
+      - platform: time
+        at: '16:25:00'
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: notify.slack
+        data_template:
+          message: >
+            Good afternnon Wiggly. Your ride home is {{states('sensor.work_to_home')}} minutes today.
+
+# Scare veda in the morning  
+  - id: scareVeda
+    alias: 'FUN: Scare veda'
+    trigger:
+      - platform: state
+        entity_id: group.downstairs_lights
+        to: "on"
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            before: '07:00:00'
+          - condition: time
+            weekday:
+              - mon
+              - tue
+              - wed
+              - thu
+              - fri
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Good morning Veda. It's schooltime! You have to learn. And go to school!You have to learn learn learn learn learn. Have a wonderful day at school!"
+   
+

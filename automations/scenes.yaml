@@ -1,0 +1,82 @@
+#################################################################
+## Scenes
+#################################################################
+# Set morning scene WEEKDAY
+  - id: morningScene
+    alias: 'SCENE: Morning'
+    trigger:
+      - platform: time
+        at: '06:20:00'
+    condition: 
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri
+    action:
+      - service: lock.unlock
+        entity_id: lock.front_door_deadbolt_locked
+      - service: scene.turn_on
+        entity_id: scene.morning_weekday  
+
+# Set morning scene WEEKEND
+  - id: morningSceneWeekend
+    alias: 'SCENE: WEEKEND MORNING'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.upstairs_occupancy
+        to: "on"
+    condition: 
+      - condition: and
+        conditions:
+          - condition: time
+            weekday:
+              - sat
+              - sun 
+          - condition: time
+            after: '07:00:00'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.morning_weekday
+
+# Turn off den lights when Roku starts playing after dark
+  - id: movieScene
+    alias: "SCENE: Media player playing"
+    trigger:
+      - platform: state
+        entity_id: remote.den
+        from: 'off'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: time
+        before: '23:00'
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: time
+        before: '23:00'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.den_movie
+
+# Turn on den lights when Chad or Tonya come home after dark
+  - id: denLightsOn
+    alias: "LIGHT: Someone came home at night"
+    trigger:
+      - platform: state
+        entity_id: group.chadtonya
+        from: 'not_home'
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: time
+        before: '23:00'
+    action:
+      - service: scene.turn_on
+        entity_id: scene.den_normal

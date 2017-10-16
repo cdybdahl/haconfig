@@ -1,6 +1,7 @@
 #################################################################
 ## Shell commands
 #################################################################  
-
-# renew SSL certificate
-   renew_ssl: ~/certbot/certbot-auto renew --quiet --no-self-upgrade --standalone --preferred-challenges http-01
+  #shutdown_drStein: 'curl -k http://192.168.1.185:8000/?action=System.Shutdown'
+  #restart_drStein: 'curl -k http://192.168.1.185:8000/?action=System.Restart'
+sleep_drStein: 'curl -k http://192.168.1.185:8000/?action=System.Sleep'
+  #renew_ssl: ~/certbot/certbot-auto renew --quiet --no-self-upgrade --standalone --preferred-challenges http-01

@@ -1,0 +1,34 @@
+#################################################################
+## Windows
+#################################################################        
+  - id: windowOpened
+    alias: "WINDOW: Kitchen opened"
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_sliding_window
+        to: "Open"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "The kitchen sliding window has been opened. Setting thermostat to away mode."
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: true
+          
+  - id: windowClosed
+    alias: "WINDOW: Kitchen closed"
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_sliding_window
+        to: "Closed"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "The kitchen sliding window has been closed. Resuming normal thermostat settings."
+      - service: climate.set_away_mode
+        data:
+          entity_id: climate.thermostat
+          away_mode: false

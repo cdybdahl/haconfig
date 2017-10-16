@@ -1,0 +1,63 @@
+#################################################################
+## Lights
+#################################################################
+# Front door light timer
+  - id: porchLightOn
+    alias: 'LIGHT: Turn on front door at sunset'
+    trigger:
+      - platform: sun
+        event: sunset
+        offset: '-00:20:00'
+    action:
+      - service: light.turn_on
+        entity_id: light.front_door
+
+  - id: porchLightOff
+    alias: 'LIGHT: Turn off front door at sunrise'
+    trigger:
+      - platform: sun
+        event: sunrise
+        offset: "+00:20:00"
+    action:
+      - service: light.turn_off
+        entity_id: light.front_door
+
+# Office light timer
+  - id: officeLightOn
+    alias: 'LIGHT: Turn on office lights when working'
+    trigger:
+      platform: time
+      at: '07:20:00'
+    condition: 
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: device_tracker.chadsPhone
+            state: home
+          - condition: time
+            weekday:
+              - mon
+              - tue
+              - wed
+              - thu
+              - fri
+    action:
+      - service: light.turn_on
+        entity_id: group.office_lights
+
+  - id: officeLightOff
+    alias: 'LIGHTS: Turn office lights off at EOD'
+    trigger:
+      - platform: time
+        at: '16:30:00'
+    condition:
+      - condition: time
+        weekday:
+          - mon
+          - tue
+          - wed
+          - thu
+          - fri     
+    action:
+      - service: light.turn_off
+        entity_id: group.office_lights

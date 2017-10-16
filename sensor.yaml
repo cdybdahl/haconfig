@@ -23,7 +23,7 @@
       sensors:
         batt_smoke1:
           friendly_name: 'Kitchen smoke alarm battery'
-          value_template: '{{ states.zwave.kitchen_smoke_alarm.attributes.battery_level }}'
+          value_template: '{{ float(states.zwave.kitchen_smoke_alarm.attributes.battery_level) }}'
           unit_of_measurement: '%'
 
     - platform: template
@@ -42,7 +42,7 @@
       sensors:
         batt_smoke2:
           friendly_name: 'Upstairs smoke alarm battery'
-          value_template: '{{ states.zwave.upstairs_smoke_alarm.attributes.battery_level }}'
+          value_template: '{{ float(states.zwave.upstairs_smoke_alarm.attributes.battery_level) }}'
           unit_of_measurement: '%'
 
     - platform: template
@@ -62,6 +62,20 @@
         batt_sump:
           friendly_name: 'Sump battery'
           value_template: '{{ float(states.zwave.everspring_st812_flood_detector.attributes.battery_level) }}'
+          unit_of_measurement: '%'
+
+    - platform: template
+      sensors:
+        batt_deadbolt:
+          friendly_name: 'Deadbolt battery'
+          value_template: '{{ float(states.zwave.front_door_deadbolt.attributes.battery_level) }}'
+          unit_of_measurement: '%'
+
+    - platform: template
+      sensors:
+        batt_kitchenwindow:
+          friendly_name: 'Kitchen window battery'
+          value_template: '{{ float(states.zwave.kitchen_sliding_window.attributes.battery_level) }}'
           unit_of_measurement: '%'
           
     - platform: command_line

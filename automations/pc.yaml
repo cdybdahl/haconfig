@@ -1,0 +1,24 @@
+#################################################################
+## PC automations
+#################################################################
+  - alias: drStein_restart
+    trigger:
+      platform: state
+      entity_id: input_select.pcoptions
+      to: "Restart"
+    action:
+      - service: shell_command.restart_drstein
+  - alias: drStein_shutdown
+    trigger:
+      platform: state
+      entity_id: input_select.pcoptions
+      to: "Shutdown"
+    action:
+      - service: shell_command.shutdown_drstein
+  - alias: drStein_sleep
+    trigger:
+      platform: state
+      entity_id: input_select.pcoptions
+      to: "Sleep"
+    action:
+      - service: shell_command.sleep_drstein

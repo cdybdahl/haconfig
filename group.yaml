@@ -15,30 +15,27 @@
       - group.cars
       - group.friends
       - group.indoor
-      - group.doors
-      - zone.home
-      - group.calendar
+      - group.pc
+      - group.windowdoor
       - persistent_notification.1
-  weather:
-    view: yes
-    entities:
       - group.weather_conditions
       - group.Today
   sensors:
     view: yes
     entities:
       - group.occupancy
-      - group.Smoke_detectors
-      - group.water_monitor
-      - sensor.ssl_cert_expiry
+      - group.detectors
+      - group.ssl
       - switch.the_tree
-      - group.windows
       - variable.temps_delay
       - script.counter
+      - group.calendar
+      - group.battery_level
   media players:
     view: yes
     entities:
-      - group.media
+      - group.downstairs_media
+      - group.upstairs_media      
   automations:
     view: yes
     entities:
@@ -59,13 +56,12 @@
 #################################################################
 ## Lights
 #################################################################
-  outdoor:
+  Outdoor:
     - light.front_door
   Office lights:
     - light.office_1
     - light.office_2
-  downstairs lights:
-    - light.foyer
+  Downstairs lights:
     - light.linear_wd500z1_wall_dimmer_switch_level
     - light.kitchen_sink
     - light.den_lights_level
@@ -74,23 +70,23 @@
   Couch lights:
     - light.couch_left
     - light.couch_right
-  bedroom:
+  Bedroom:
     - light.bedroom
-  upstairs lights:
+  Upstairs lights:
     - group.office_lights
     - light.bedroom
 
 #################################################################
 ## Device trackers
 #################################################################
-  family:
+  Family:
     - device_tracker.chadsphone
     - device_tracker.tonyasphone
     - device_tracker.vedasiphone
-  cars:
+  Cars:
     - device_tracker.bmwx3_bmwx3
     - device_tracker.volvo_volvoc30
-  friends:
+  Friends:
     - device_tracker.maria
     - device_tracker.hunter
   chadTonya:
@@ -98,14 +94,7 @@
     - device_tracker.tonyasphone 
   work:
     - device_tracker.chadssurfacebook
-
-#################################################################
-## Locks
-#################################################################
     
-  Doors:
-    - lock.front_door_deadbolt_locked
-
 #################################################################
 ## Thermostat and occupancy
 #################################################################
@@ -121,11 +110,10 @@
 #################################################################
 ## Sensors
 #################################################################
-  Smoke detectors:
+  Detectors:
     - sensor.smoke1
-    - sensor.batt_smoke1
     - sensor.smoke2
-    - sensor.batt_smoke2
+    - sensor.everspring_st812_flood_detector_flood
   Weather conditions:
     - sensor.dark_sky_temperature
     - sensor.dark_sky_summary
@@ -138,31 +126,52 @@
     - sensor.dark_sky_daily_high_apparent_temperature
     - sensor.dark_sky_daily_low_temperature
     - sensor.dark_sky_hourly_summary
-  Water monitor:
-    - sensor.everspring_st812_flood_detector_flood
-    - sensor.batt_sump
-  Windows:
-    - sensor.kitchen_sliding_window
-  calendar:
-    - camera.calendar
+  Calendar:
     - sensor.template_calendar_house
-    
+  SSL:
+    - sensor.ssl_cert_expiry
+
+#################################################################
+## Openings
+#################################################################
+  Window/Door:
+    - sensor.kitchen_sliding_window
+    - lock.front_door_deadbolt_locked
+
+#################################################################
+## Device batteries
+#################################################################
+  Battery level:
+    - sensor.batt_smoke1
+    - sensor.batt_smoke2
+    - sensor.batt_sump
+    - sensor.batt_deadbolt
+    - sensor.batt_kitchenwindow
+
 #################################################################
 ## Media players
 #################################################################
-  media:
+  Upstairs media:
     - media_player.chads_office
+    - media_player.roku_5s467y285888
+    - media_player.bedroom_tv
+  Downstairs media:
+    - media_player.kitchen_home
     - media_player.big_tv
     - media_player.roku_4e756g050640
-    - media_player.roku_5s467y285888
-    - media_player.kitchen_home
-    - media_player.bedroom_tv
 
 #################################################################
 ## Harmony hub -- not too useful
 #################################################################
   remotes:
     - remote.den
+
+#################################################################
+## PC Controls
+#################################################################
+  PC:
+    - switch.dr_stein
+    - input_select.pcoptions
     
 #################################################################
 ## Automations
@@ -199,7 +208,6 @@
     - automation.ssl_expiration_warning
     - automation.scene_media_player_playing
     - automation.fun_scare_veda
-    - automation.fun_scare_hunter
     - automation.homeassistant_update_available_notification
     - automation.fun_google_talk_to_alexa
     - automation.ht_Turn_football_on

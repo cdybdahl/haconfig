@@ -1,0 +1,13 @@
+#################################################################
+## Inputs
+#################################################################  
+
+  pcoptions:
+    name: PC Power Options
+    options:
+      - Restart
+      - Shutdown
+      - None
+      - Sleep
+    initial: None
+    icon: mdi:desktop-tower

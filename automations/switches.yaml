@@ -1,0 +1,22 @@
+#################################################################
+## Switches
+#################################################################   
+
+# Turn on WEMO switch. Currently used for electric blanket
+  - id: wemoOn
+    alias: 'SWITCH: Turn on WEMO at 21:00'
+    trigger:
+      - platform: time
+        at: '08:00:00'
+    action:
+      - service: switch.turn_on
+        entity_id: switch.the_tree
+
+  - id: wemoOff
+    alias: 'SWITCH: Turn off WEMO at 11:00'
+    trigger:
+      - platform: time
+        at: '17:00:00'
+    action:
+      - service: switch.turn_off
+        entity_id: switch.the_tree

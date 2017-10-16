@@ -1,0 +1,75 @@
+#################################################################
+## Presence detection
+#################################################################
+  - id: chadHome
+    alias: "PRESENCE: Chad just got home"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.chadsPhone
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: time
+        before: '23:00'
+    action:
+      - service: tts.google_say
+        entity_id: media_player.kitchen_home
+        data:
+          message: "Chad is home."
+      - service: notify.slack
+        data:
+          message: "Hey guys, Chad just got home."
+    
+  - id: tonyaHome
+    alias: "PRESENCE: Tonya just got home"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.tonyasPhone
+        from: "not_home"
+        to: "home"
+    condition:
+      - condition: time
+        before: '21:00'
+    action:
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data:
+          message: "Wiggly is home."
+      - service: notify.slack
+        data:
+          message: "Hey guys, Wiggly just got home."
+
+  - id: vedaHome
+    alias: "PRESENCE: Veda just got home"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.vedasiphone
+        from: "not_home"
+        to: "home"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data:
+          message: "Veda is home."
+          action:
+      - service: notify.slack
+        data:
+          message: "Hey guys, Veda just got home."
+
+  - id: tonyaLeavingWork
+    alias: "PRESENCE: Tonya just left work"
+    trigger:
+      - platform: state
+        entity_id: device_tracker.bmwx3_bmwx3
+        from: "Work"
+        to: "not_home"
+    action:
+      - service: tts.google_say
+        entity_id: media_player.chads_office, media_player.kitchen_home
+        data_template:
+          message: >
+            Wiggly is leaving work. She'll be home in {{states('sensor.work_to_home')}} minutes.
+      - service: notify.slack
+        data_template:
+          message: >
+            Hey guys, Wiggly is heading home from work. She'll be home in {{states('sensor.work_to_home')}} minutes.

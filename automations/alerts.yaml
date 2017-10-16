@@ -1,0 +1,78 @@
+#################################################################
+## Alerts
+#################################################################        
+# Monitor home humidity
+  - id: humidityWarn
+    alias: 'SENSOR: Humidity warning' 
+    trigger:
+     -  platform: numeric_state
+        entity_id: sensor.home_humidity
+        below: 30
+    action:
+      - service: notify.slack
+        data:
+          message: "The humidity is too low. Check the humidifier."
+
+  - id: humidityBetter
+    alias: 'SENSOR: Humidity back up' 
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.home_humidity
+        above: 25
+    action:
+      - service: notify.slack
+        data:
+          message: "Cool, humidity is back up!"
+          
+# Warn me when smoke detector batteries get low
+  - id: detectorBattery
+    alias: "SENSOR: Basement stairs battery low"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.batt_smoke1
+        below: 25
+    action:
+      - service: notify.slack
+        data:
+          message: "Better replace the batteries in the smoke alarm!"
+
+# Notify Chad and Tonya when smoke alarm goes off
+  - id: smokeAlarm
+    alias: "SENSOR: Basement stairs smoke alarm"
+    trigger:
+      - platform: state
+        entity_id: sensor.smoke1
+        to: "ALERT!"
+    action:
+      - service: notify.slack
+        data:
+          message: "ALERT! ALERT! Smoke detector activated!"
+
+# Warn me when flood sensor batteries are low
+  - id: sumpBattery
+    alias: "SENSOR: Sump low battery"
+    trigger:
+      - platform: numeric_state
+        entity_id: sensor.batt_sump
+        below: 25
+    action:
+      - service: notify.slack
+        data:
+          message: "Replace sump flood detector batteries."
+
+# Notify when water gets too high in the sump  
+  - id: sumpWater
+    alias: "SENSOR: Water detected in basement"
+    trigger:
+     - platform: numeric_state
+       entity_id: sensor.everspring_st812_flood_detector_flood_5_5
+       above: 1
+    action:
+      - service: persistent_notification.create
+        data:
+         message: "Check the sump pump."
+         title: "Water level high!"
+         notification_id: 1
+      - service: notify.slack
+        data:
+          message: "Uh-oh. Looks like the sump pump isn't doing its job."

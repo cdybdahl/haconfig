@@ -191,11 +191,18 @@ zwave:
 #################################################################
 ## Includes
 #################################################################
-automation: !include automations.yaml
+automation: !include_dir_merge_list ./automations
 group: !include group.yaml
 notify: !include notify.yaml
+input_select: !include input.yaml
 scene: !include scene.yaml
 script: !include_dir_named scripts
 sensor: !include sensor.yaml
-shell_command: !include shell.yaml
+switch: !include switch.yaml
 zone: !include zones.yaml
+
+shell_command:
+  shutdown_drstein: 'curl -k http://192.168.1.185:8000/?action=System.Shutdown'
+  restart_drstein: 'curl -k http://192.168.1.185:8000/?action=System.Restart'
+  sleep_drstein: 'curl -k http://192.168.1.185:8000/?action=System.Sleep'
+  renew_ssl: ~/certbot/certbot-auto renew --quiet --no-self-upgrade --standalone --preferred-challenges http-01

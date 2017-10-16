@@ -1,0 +1,37 @@
+#################################################################
+## Homeassistant stuff
+#################################################################   
+        
+# Notify me when a Homeassistant update is available
+  - id: haUpdate 
+    alias: 'HOMEASSISTANT: Update Available Notification'
+    trigger:
+      platform: state
+      entity_id: updater.updater
+    action:
+      service: notify.slack
+      data:
+        message: 'Update for Home Assistant is available.'
+
+  - id: renewCert
+    alias: 'SSL: Auto Renew Certificate'
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.ssl_cert_expiry
+      below: 29
+    action:
+      - service: shell_command.renew_ssl
+      - service: notify.slack
+        data: 
+          message: "Attempting to update SSL certificate..."
+      
+  - id: certNotRenewed
+    alias: 'SSL: expiration warning'
+    trigger:
+      platform: numeric_state
+      entity_id: sensor.ssl_cert_expiry
+      below: 21
+    action:
+      service: notify.slack
+      data:
+        message: "Warning - SSL certificate expires in 21 days and has not been automatically renewed"
